@@ -177,8 +177,12 @@
       # might require enabling seacas if deal.ii requires
       trilinos_extra_args = ''
         -DTrilinos_ENABLE_ML=ON
+        -DBoost_INCLUDE_DIRS=${pkgs.boost183}/include
+        -DBoostLib_INCLUDE_DIRS=${pkgs.boost183}/include
+        -DBoostLib_LIBRARY_DIRS=${pkgs.boost183}/lib
+        -DTPL_ENABLE_BoostLib=ON 
       '';
-      trilinos_withMPI = pkgs.trilinos.override (previous: { withMPI = true; });
+      trilinos_withMPI = pkgs.trilinos.override (previous: { withMPI = true; boost = pkgs.boost183; });
       trilinos_override = trilinos_withMPI.overrideAttrs (previousAttrs : rec {
         preConfigure = previousAttrs.preConfigure + ''
           cmakeFlagsArray+=(${trilinos_extra_args})
@@ -207,7 +211,7 @@
           p4est
           trilinos_override
           openmpi
-          boost
+          boost183
         ];
         propagatedBuildInputs = [
           deal_II
@@ -217,22 +221,22 @@
           p4est
           trilinos_override
           openmpi
-          boost
+          boost183
         ];
         cmakeFlags = [
           "-DDEAL_II_DIR=${deal_II}"
           "-DCMAKE_BUILD_TYPE=Release"
-##          "-DCMAKE_CXX_FLAGS='-g -ffast-math'"
+#          "-DCMAKE_CXX_FLAGS='-g -ffast-math'"
           "-DADAMANTINE_ENABLE_ADIAK=ON"
           "-DADAMANTINE_ENABLE_CALIPER=ON"
-          "-DBOOST_DIR=${boost}"
+          "-DBOOST_DIR=${boost183}"
         ];
       });
     in rec {
       defaultApp = flake-utils.lib.mkApp {
         drv = defaultPackage;
       };
-      defaultPackage = lightgbm-cli;
+      defaultPackage = adamantine;
       devShell = pkgs.mkShell {
         buildInputs = [
           pkgs.p4est
