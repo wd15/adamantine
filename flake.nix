@@ -73,29 +73,6 @@
       #   buildCommand = "${old.buildCommand}\n patchShebangs $out";
       # });
 
-      lightgbm-cli = (with pkgs; stdenv.mkDerivation {
-          pname = "lightgbm-cli";
-          version = "3.3.1";
-          src = fetchgit {
-            url = "https://github.com/microsoft/LightGBM";
-            rev = "v3.3.1";
-            sha256 = "pBrsey0RpxxvlwSKrOJEBQp7Hd9Yzr5w5OdUuyFpgF8=";
-            fetchSubmodules = true;
-          };
-          nativeBuildInputs = [
-            clang
-            cmake
-            kokkos
-            openmpi
-          ];
-          buildPhase = "make -j $NIX_BUILD_CORES";
-          installPhase = ''
-            mkdir -p $out/bin
-            mv $TMP/LightGBM/lightgbm $out/bin
-          '';
-        }
-      );
-
       # trilinos with mpi enabled is required
       # https://github.com/NixOS/nixpkgs/blob/2eacb37fa30f518c27873b7c254d1d34859bad35/pkgs/development/libraries/science/math/trilinos/default.nix#L61
       # use this https://github.com/NixOS/nixpkgs/blob/2eacb37fa30f518c27873b7c254d1d34859bad35/pkgs/development/libraries/science/math/trilinos/default.nix#L61
@@ -240,7 +217,6 @@
       devShell = pkgs.mkShell {
         buildInputs = [
           pkgs.p4est
-          lightgbm-cli
           pkgs.kokkos
           pkgs.cmake
           pkgs.openmpi
