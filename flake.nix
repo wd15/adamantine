@@ -122,12 +122,14 @@
           cudatoolkit
           arborx
           p4est
+          boost183
         ];
         propagatedBuildInputs = [
           cudatoolkit
           p4est
           arborx
           trilinos_override
+          boost183
         ];
         cmakeFlags = [
           "-DCMAKE_BUILD_TYPE=DebugRelease"
