@@ -34,7 +34,6 @@
         }
       );
 
-
       caliper = (with pkgs; stdenv.mkDerivation {
           pname = "caliper";
           version = "2.10.0";
@@ -61,22 +60,7 @@
           ];
         }
       );
-      
-      
 
-      # p4est-setup-src = pkgs.fetchurl {
-      #   url = "https://raw.githubusercontent.com/dealii/dealii/master/doc/external-libs/p4est-setup.sh";
-      #   hash = "sha256-foTrK7ga9j6dYRjkwwfct/iUOs6UOWlifsSxc/11Gh8=";
-      # };
-
-      # p4est-setup = (pkgs.writeScriptBin "p4est-setup" (builtins.readFile p4est-setup-src)).overrideAttrs(old: {
-      #   buildCommand = "${old.buildCommand}\n patchShebangs $out";
-      # });
-
-      # trilinos with mpi enabled is required
-      # https://github.com/NixOS/nixpkgs/blob/2eacb37fa30f518c27873b7c254d1d34859bad35/pkgs/development/libraries/science/math/trilinos/default.nix#L61
-      # use this https://github.com/NixOS/nixpkgs/blob/2eacb37fa30f518c27873b7c254d1d34859bad35/pkgs/development/libraries/science/math/trilinos/default.nix#L61
-      
       arborx = (with pkgs; stdenv.mkDerivation {
         pname = "arborx";
         version = "1.5";
@@ -89,7 +73,6 @@
         nativeBuildInputs = [
           cmake
           openmpi
-          #kokkos
           trilinos_override
           cudatoolkit
         ];
@@ -99,7 +82,6 @@
         cmakeFlags = [
           "-DCMAKE_BUILD_TYPE=Release"
           "-DBUILD_SHARED_LIBS=ON"
-          # "-DCMAKE_CXX_COMPILER=nvcc_wrapper"
           "-DCMAKE_CXX_EXTENSIONS=OFF"
           "-DARBORX_ENABLE_MPI=ON"
         ];
@@ -114,16 +96,17 @@
           sha256 = "sha256-wJIrSuEDU19eZT66MN0DIuSiWQ1/gdu+gHeMYrbQkxk=";
           fetchSubmodules = true;
         };
+        
         nativeBuildInputs = [
           cmake
           openmpi
-          #kokkos
           trilinos_override
           cudatoolkit
           arborx
           p4est
           boost183
         ];
+        
         propagatedBuildInputs = [
           cudatoolkit
           p4est
@@ -131,9 +114,9 @@
           trilinos_override
           boost183
         ];
+        
         cmakeFlags = [
           "-DCMAKE_BUILD_TYPE=DebugRelease"
-          # "-DCMAKE_CXX_COMPILER=nvcc_wrapper"
           "-DCMAKE_CXX_STANDARD=17"
           "-DCMAKE_CXX_EXTENSIONS=OFF"
           "-DDEAL_II_WITH_TBB=OFF"
@@ -149,7 +132,7 @@
           "-DDEAL_II_TRILINOS_WITH_SEACAS=OFF"
           "-DDEAL_II_COMPONENT_EXAMPLES=OFF"
           "-DDEAL_II_WITH_ADOLC=OFF"
-          # "-DDEAL_II_WITH_BOOST=ON"
+          "-DDEAL_II_ALLOW_BUNDLED=OFF"
          ];
       });
 
@@ -210,6 +193,10 @@
           "-DADAMANTINE_ENABLE_CALIPER=ON"
           "-DBOOST_DIR=${boost183}"
         ];
+        installPhase = ''
+          mkdir -p $out/bin
+          cp bin/adamantine $out/bin
+        '';
       });
     in rec {
       defaultApp = flake-utils.lib.mkApp {
@@ -218,19 +205,19 @@
       defaultPackage = adamantine;
       devShell = pkgs.mkShell {
         buildInputs = [
-          pkgs.p4est
-          pkgs.kokkos
-          pkgs.cmake
-          pkgs.openmpi
-          pkgs.hdf5
-          pkgs.netcdf
-          trilinos_override
-          adiak
-          caliper
-          pkgs.python3
-          arborx
-          pkgs.cudatoolkit
-          deal_II
+          # pkgs.p4est
+          # pkgs.kokkos
+          # pkgs.cmake
+          # pkgs.openmpi
+          # pkgs.hdf5
+          # pkgs.netcdf
+          # trilinos_override
+          # adiak
+          # caliper
+          # pkgs.python3
+          # arborx
+          # pkgs.cudatoolkit
+          # deal_II
           adamantine
         ];
       };
