@@ -149,7 +149,7 @@
           "-DDEAL_II_TRILINOS_WITH_SEACAS=OFF"
           "-DDEAL_II_COMPONENT_EXAMPLES=OFF"
           "-DDEAL_II_WITH_ADOLC=OFF"
-          "-DDEAL_II_WITH_BOOST=ON"
+          # "-DDEAL_II_WITH_BOOST=ON"
          ];
       });
 
