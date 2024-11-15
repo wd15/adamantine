@@ -205,19 +205,6 @@
       defaultPackage = adamantine;
       devShell = pkgs.mkShell {
         buildInputs = [
-          # pkgs.p4est
-          # pkgs.kokkos
-          # pkgs.cmake
-          # pkgs.openmpi
-          # pkgs.hdf5
-          # pkgs.netcdf
-          # trilinos_override
-          # adiak
-          # caliper
-          # pkgs.python3
-          # arborx
-          # pkgs.cudatoolkit
-          # deal_II
           adamantine
         ];
       };
