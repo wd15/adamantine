@@ -16,69 +16,73 @@
       };
 
       adiak = (with pkgs; stdenv.mkDerivation {
-          pname = "adiak";
-          version = "0.4.0";
-          src = fetchgit {
-            url = "https://github.com/LLNL/Adiak";
-            rev = "v0.4.0";
-            sha256 = "sha256-S4ZLU6f/njdZXyoQdCJIDzpQTSmfapZiRe4zIex5f0Q=";
-            fetchSubmodules = true;
-          };
-          nativeBuildInputs = [
-            cmake
-          ];
-          cmakeFlags = [
-            "-DBUILD_SHARED_LIBS=ON"
-            "-DCMAKE_BUILD_TYPE=Release"
-          ];
-        }
-      );
+        pname = "adiak";
+        version = "0.4.0";
+
+        src = fetchgit {
+          url = "https://github.com/LLNL/Adiak";
+          rev = "v0.4.0";
+          sha256 = "sha256-S4ZLU6f/njdZXyoQdCJIDzpQTSmfapZiRe4zIex5f0Q=";
+          fetchSubmodules = true;
+        };
+
+        buildInputs = [
+          cmake
+        ];
+
+        cmakeFlags = [
+          "-DBUILD_SHARED_LIBS=ON"
+          "-DCMAKE_BUILD_TYPE=Release"
+        ];
+      });
 
       caliper = (with pkgs; stdenv.mkDerivation {
-          pname = "caliper";
-          version = "2.10.0";
-          src = fetchgit {
-            url = "https://github.com/LLNL/caliper";
-            rev = "9b5b5efe9096e3f2b306fcca91ae739ae5d00716";
-            sha256 = "sha256-4rnPbRYtciohLnThtonTrUBO+d8vyWvJsCgoqbJI5Rg=";
-            fetchSubmodules = true;
-          };
-          nativeBuildInputs = [
-            cmake
-            adiak
-            python3
-          ];
-          cmakeFlags = [
-            "-DCMAKE_BUILD_TYPE=Release"
-            "-DBUILD_SHARED_LIBS=ON"
-            "-DWITH_ADIAK=ON"
-            "-DWITH_LIBDW=ON"
-            "-DWITH_LIBPFM=ON"
-            "-DWITH_LIBUNWIND=ON"
-            "-DWITH_MPI=ON"
-            "-DWITH_SAMPLER=ON"
-          ];
-        }
-      );
+        pname = "caliper";
+        version = "2.10.0";
+
+        src = fetchgit {
+          url = "https://github.com/LLNL/caliper";
+          rev = "9b5b5efe9096e3f2b306fcca91ae739ae5d00716";
+          sha256 = "sha256-4rnPbRYtciohLnThtonTrUBO+d8vyWvJsCgoqbJI5Rg=";
+          fetchSubmodules = true;
+        };
+
+        buildInputs = [
+          cmake
+          adiak
+          python3
+        ];
+
+        cmakeFlags = [
+          "-DCMAKE_BUILD_TYPE=Release"
+          "-DBUILD_SHARED_LIBS=ON"
+          "-DWITH_ADIAK=ON"
+          "-DWITH_LIBDW=ON"
+          "-DWITH_LIBPFM=ON"
+          "-DWITH_LIBUNWIND=ON"
+          "-DWITH_MPI=ON"
+          "-DWITH_SAMPLER=ON"
+        ];
+      });
 
       arborx = (with pkgs; stdenv.mkDerivation {
         pname = "arborx";
         version = "1.5";
+
         src = fetchgit {
           url = "https://github.com/arborx/ArborX";
           rev = "v1.5";
           sha256 = "sha256-qEC4BocPyH9mmU9Ys0nNu8s0l3HQGPHg8B1oNcGwXOQ=";
           fetchSubmodules = true;
         };
-        nativeBuildInputs = [
+
+        buildInputs = [
           cmake
           openmpi
           trilinos_override
           cudatoolkit
         ];
-        propagatedBuildInputs = [
-          cudatoolkit
-        ];
+
         cmakeFlags = [
           "-DCMAKE_BUILD_TYPE=Release"
           "-DBUILD_SHARED_LIBS=ON"
@@ -96,8 +100,8 @@
           sha256 = "sha256-wJIrSuEDU19eZT66MN0DIuSiWQ1/gdu+gHeMYrbQkxk=";
           fetchSubmodules = true;
         };
-        
-        nativeBuildInputs = [
+
+        buildInputs = [
           cmake
           openmpi
           trilinos_override
@@ -106,15 +110,7 @@
           p4est
           boost183
         ];
-        
-        propagatedBuildInputs = [
-          cudatoolkit
-          p4est
-          arborx
-          trilinos_override
-          boost183
-        ];
-        
+
         cmakeFlags = [
           "-DCMAKE_BUILD_TYPE=DebugRelease"
           "-DCMAKE_CXX_STANDARD=17"
@@ -136,35 +132,41 @@
          ];
       });
 
-      # might require enabling seacas if deal.ii requires
       trilinos_extra_args = ''
         -DTrilinos_ENABLE_ML=ON
         -DBoost_INCLUDE_DIRS=${pkgs.boost183}/include
         -DBoostLib_INCLUDE_DIRS=${pkgs.boost183}/include
         -DBoostLib_LIBRARY_DIRS=${pkgs.boost183}/lib
-        -DTPL_ENABLE_BoostLib=ON 
+        -DTPL_ENABLE_BoostLib=ON
       '';
-      trilinos_withMPI = pkgs.trilinos.override (previous: { withMPI = true; boost = pkgs.boost183; });
-      trilinos_override = trilinos_withMPI.overrideAttrs (previousAttrs : rec {
-        preConfigure = previousAttrs.preConfigure + ''
-          cmakeFlagsArray+=(${trilinos_extra_args})
-        '';
-        version = "14.4.0";
-        src = previousAttrs.src.override {
-          rev = "${previousAttrs.pname}-release-${pkgs.lib.replaceStrings [ "." ] [ "-" ] version}";
-          sha256 = "sha256-jbXQYEyf/p9F2I/I7jP+0/6OOcH5ArFlUk6LHn453qY=";
-        };
-      });
+      trilinos_withMPI = pkgs.trilinos.override ( previous: { withMPI = true; boost = pkgs.boost183; });
+      trilinos_override = trilinos_withMPI.overrideAttrs ( previousAttrs : rec {
+          preConfigure = previousAttrs.preConfigure + ''
+                       cmakeFlagsArray+=(${trilinos_extra_args})
+                       '';            
+          version = "14.4.0";
+          src = previousAttrs.src.override {
+            rev = "${previousAttrs.pname}-release-${pkgs.lib.replaceStrings [ "." ] [ "-" ] version}";
+            sha256 = "sha256-jbXQYEyf/p9F2I/I7jP+0/6OOcH5ArFlUk6LHn453qY=";
+          };
+        }
+      );
 
-      adamantine = (with pkgs; stdenv.mkDerivation {
+      adamantine = (with pkgs; stdenv.mkDerivation rec {
         pname = "adamantine";
         version = "1.0";
-        src = fetchgit {
-          url = "https://github.com/adamantine-sim/adamantine";
-          rev = "v1.0";
-          sha256 = "sha256-pwwGgk4uIEOkyNLN26nRYvkzQZR53TJW14R9P99E3Ts=";
-        };
-        nativeBuildInputs = [
+
+        # build version in repository
+        src = pkgs.lib.cleanSource ./.;
+
+        # get a release from github
+        # src = fetchgit {
+        #   url = "https://github.com/adamantine-sim/adamantine";
+        #   rev = "v1.0";
+        #   sha256 = "sha256-pwwGgk4uIEOkyNLN26nRYvkzQZR53TJW14R9P99E3Ts=";
+        # };
+
+        buildInputs = [
           deal_II
           arborx
           adiak
@@ -172,27 +174,23 @@
           cmake
           p4est
           trilinos_override
-          openmpi
           boost183
-        ];
+        ] ++ propagatedBuildInputs;
+
         propagatedBuildInputs = [
-          deal_II
-          arborx
-          adiak
-          caliper
-          p4est
-          trilinos_override
           openmpi
-          boost183
         ];
+
         cmakeFlags = [
           "-DDEAL_II_DIR=${deal_II}"
           "-DCMAKE_BUILD_TYPE=Release"
-#          "-DCMAKE_CXX_FLAGS='-g -ffast-math'"
+          "-DCMAKE_CXX_FLAGS=-ffast-math"
+          "-DCMAKE_CXX_FLAGS=-g"
           "-DADAMANTINE_ENABLE_ADIAK=ON"
           "-DADAMANTINE_ENABLE_CALIPER=ON"
           "-DBOOST_DIR=${boost183}"
         ];
+
         installPhase = ''
           mkdir -p $out/bin
           cp bin/adamantine $out/bin
